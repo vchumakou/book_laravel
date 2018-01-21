@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Book;
 use App\User;
+use App\Message;
 
 class BookController extends Controller
 {
+    public static $limit = 10;
+
     public function index()
     {
-        return Book::all();
+        return Book::paginate(self::$limit);
     }
 
     public function show($id)
@@ -27,6 +30,7 @@ class BookController extends Controller
     {
         if (User::isAdmin()) {
             $article = Book::findOrFail($id);
+            Message::send($article,User::getUserId());
         }
         $article->update($request->all());
 
@@ -35,9 +39,10 @@ class BookController extends Controller
 
     public function delete(Request $request, $id)
     {
-        if (User::isAdmin()) {
-            $article = Article::findOrFail($id);
+        if (!User::isAdmin()) {
+            return 403;
         }
+        $article = Article::findOrFail($id);
         $article->delete();
 
         return 204;

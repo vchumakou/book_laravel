@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Support\Facades\Auth;
 
 class User extends Authenticatable
 {
@@ -29,5 +30,13 @@ class User extends Authenticatable
 
     public static function isAdmin() {
         return true;
+    }
+
+    public static function getUserId() {
+        if (Auth::check())
+        {
+            return Auth::user()->getId();
+        }
+        return null;
     }
 }
